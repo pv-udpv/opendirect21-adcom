@@ -214,6 +214,12 @@ class AdcomModelGenerator:
             lines.append("")
             lines.append("")
 
+        # Rebuild models to resolve forward references
+        lines.append("# Rebuild models to resolve forward references")
+        for obj in objects:
+            lines.append(f"{obj.name}.model_rebuild()")
+        lines.append("")
+
         return "\n".join(lines)
 
     def generate_adcom_models(self) -> Path:

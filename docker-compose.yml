@@ -1,0 +1,37 @@
+version: '3.9'
+
+services:
+  api:
+    build: .
+    container_name: opendirect21-api
+    ports:
+      - "8000:8000"
+    environment:
+      - SERVER_HOST=0.0.0.0
+      - SERVER_PORT=8000
+      - LOG_LEVEL=INFO
+    volumes:
+      - .:/app
+    command: python -m uvicorn opendirect21.main:app --host 0.0.0.0 --port 8000 --reload
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+
+# Optional: Add PostgreSQL for future production use
+  # postgres:
+  #   image: postgres:16-alpine
+  #   container_name: opendirect21-db
+  #   environment:
+  #     POSTGRES_USER: opendirect
+  #     POSTGRES_PASSWORD: changeme
+  #     POSTGRES_DB: opendirect21
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+
+# volumes:
+#   postgres_data:

@@ -1,6 +1,11 @@
 """Smoke tests for parser verification."""
 
+import sys
 from pathlib import Path
+
+# Add project root to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+
 from tools.spec_parser.md_tables import MarkdownTableParser
 
 

@@ -41,7 +41,7 @@ class MarkdownTableParser:
 
     # Regex to find table with attributes
     TABLE_RE = re.compile(
-        r"\|Attribute\|Description\|Type\|\n\|--\|--\|--\|\n(?P<body>.*?)(?=\n\n|^##)",
+        r"\|Attribute\|Description\|Type\|\n\|--\|--\|--\|\n(?P<body>.*?)(?=\n\n|^##|\Z)",
         re.MULTILINE | re.DOTALL,
     )
 
@@ -67,11 +67,15 @@ class MarkdownTableParser:
 
         for line in body.split("\n"):
             line = line.strip()
-            if not line or line.startswith("|"):
+            if not line:
                 continue
 
-            # Split by | and filter empty parts
-            parts = [p.strip(" *") for p in line.split("|")]
+            # Skip separator lines (e.g., |--|--|--|)
+            if line.replace("|", "").replace("-", "").replace(" ", "") == "":
+                continue
+
+            # Split by | and strip only spaces (keep * for required detection)
+            parts = [p.strip() for p in line.split("|")]
             if len(parts) < 4:
                 continue
 

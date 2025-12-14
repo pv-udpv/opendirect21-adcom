@@ -285,9 +285,7 @@ async def test_full_crud_cycle(adcom_client: AsyncClient):
 
     # Update
     update_data = {"id": "full-cycle-ad", "adomain": ["updated-cycle.com"], "secure": 1}
-    update_response = await adcom_client.put(
-        "/api/v1/adcom/ads/full-cycle-ad", json=update_data
-    )
+    update_response = await adcom_client.put("/api/v1/adcom/ads/full-cycle-ad", json=update_data)
     assert update_response.status_code == 200
     assert update_response.json()["secure"] == 1
 

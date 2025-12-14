@@ -144,9 +144,7 @@ def test_event_model_creation():
 
 def test_publisher_model_creation():
     """Test creating Publisher model instance."""
-    publisher = Publisher(
-        id="pub-123", name="Test Publisher", domain="publisher.com"
-    )
+    publisher = Publisher(id="pub-123", name="Test Publisher", domain="publisher.com")
 
     assert publisher.id == "pub-123"
     assert publisher.name == "Test Publisher"

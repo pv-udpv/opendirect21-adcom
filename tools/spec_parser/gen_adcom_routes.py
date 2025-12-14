@@ -36,7 +36,11 @@ class AdcomRouteGenerator:
         # Handle special cases
         if name_lower.endswith("y"):
             # Publisher -> publishers (not publishery)
-            return f"{name_lower[:-1]}ies" if name_lower not in ["display", "video", "audio"] else f"{name_lower}s"
+            return (
+                f"{name_lower[:-1]}ies"
+                if name_lower not in ["display", "video", "audio"]
+                else f"{name_lower}s"
+            )
         elif name_lower.endswith("s"):
             # Already ends with s
             return f"{name_lower}es"
@@ -58,10 +62,10 @@ class AdcomRouteGenerator:
         lines = []
         lines.append(f"# Routes for {model_name}")
         lines.append(f'@router.get("/{route_prefix}", response_model=List[{model_name}])')
-        lines.append(f'async def list_{route_prefix}(')
+        lines.append(f"async def list_{route_prefix}(")
         lines.append(f"    skip: int = Query(0, ge=0),")
         lines.append(f"    limit: int = Query(100, ge=1, le=1000),")
-        lines.append(f') -> List[{model_name}]:')
+        lines.append(f") -> List[{model_name}]:")
         lines.append(f'    """List all {model_name} objects with pagination."""')
         lines.append(f'    items = await store.list("{route_prefix}", skip=skip, limit=limit)')
         lines.append(f"    return [{model_name}(**item) for item in items]")
@@ -72,11 +76,15 @@ class AdcomRouteGenerator:
         lines.append(f'    """Get a specific {model_name} by ID."""')
         lines.append(f'    item = await store.get("{route_prefix}", id)')
         lines.append(f"    if not item:")
-        lines.append(f'        raise HTTPException(status_code=404, detail="{model_name} not found")')
+        lines.append(
+            f'        raise HTTPException(status_code=404, detail="{model_name} not found")'
+        )
         lines.append(f"    return {model_name}(**item)")
         lines.append("")
 
-        lines.append(f'@router.post("/{route_prefix}", response_model={model_name}, status_code=201)')
+        lines.append(
+            f'@router.post("/{route_prefix}", response_model={model_name}, status_code=201)'
+        )
         lines.append(f"async def create_{model_name.lower()}(item: {model_name}) -> {model_name}:")
         lines.append(f'    """Create a new {model_name}."""')
         lines.append(f'    created = await store.create("{route_prefix}", item.model_dump())')
@@ -84,11 +92,15 @@ class AdcomRouteGenerator:
         lines.append("")
 
         lines.append(f'@router.put("/{route_prefix}/{{id}}", response_model={model_name})')
-        lines.append(f"async def update_{model_name.lower()}(id: str, item: {model_name}) -> {model_name}:")
+        lines.append(
+            f"async def update_{model_name.lower()}(id: str, item: {model_name}) -> {model_name}:"
+        )
         lines.append(f'    """Update an existing {model_name}."""')
         lines.append(f'    updated = await store.update("{route_prefix}", id, item.model_dump())')
         lines.append(f"    if not updated:")
-        lines.append(f'        raise HTTPException(status_code=404, detail="{model_name} not found")')
+        lines.append(
+            f'        raise HTTPException(status_code=404, detail="{model_name} not found")'
+        )
         lines.append(f"    return {model_name}(**updated)")
         lines.append("")
 
@@ -97,7 +109,9 @@ class AdcomRouteGenerator:
         lines.append(f'    """Delete a {model_name}."""')
         lines.append(f'    deleted = await store.delete("{route_prefix}", id)')
         lines.append(f"    if not deleted:")
-        lines.append(f'        raise HTTPException(status_code=404, detail="{model_name} not found")')
+        lines.append(
+            f'        raise HTTPException(status_code=404, detail="{model_name} not found")'
+        )
         lines.append(f"    return")
         lines.append("")
 
@@ -138,11 +152,11 @@ class AdcomRouteGenerator:
         lines.append("")
 
         # Create router and store
-        lines.append('# Create router with /api/v1/adcom prefix')
-        lines.append('router = APIRouter(')
+        lines.append("# Create router with /api/v1/adcom prefix")
+        lines.append("router = APIRouter(")
         lines.append('    prefix="/api/v1/adcom",')
         lines.append('    tags=["adcom"],')
-        lines.append(')')
+        lines.append(")")
         lines.append("")
         lines.append("# Initialize data store")
         lines.append("store = InMemoryStore()")
@@ -152,7 +166,15 @@ class AdcomRouteGenerator:
         # Generate routes for each model
         # Prioritize: Media objects, Asset objects, then Context objects
         media_objects = ["Ad", "Display", "Banner", "Video", "Audio", "Native"]
-        asset_objects = ["Asset", "LinkAsset", "ImageAsset", "VideoAsset", "TitleAsset", "DataAsset", "Event"]
+        asset_objects = [
+            "Asset",
+            "LinkAsset",
+            "ImageAsset",
+            "VideoAsset",
+            "TitleAsset",
+            "DataAsset",
+            "Event",
+        ]
         context_objects = ["Publisher", "Content", "User", "Device", "Geo"]
 
         categories = [

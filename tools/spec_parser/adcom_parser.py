@@ -181,9 +181,7 @@ class AdcomParser(MarkdownTableParser):
                 # Extract description from text before table
                 desc_text = chunk[: table_match.start()].strip()
                 # Get first paragraph as description
-                desc_lines = [
-                    line.strip() for line in desc_text.split("\n") if line.strip()
-                ]
+                desc_lines = [line.strip() for line in desc_text.split("\n") if line.strip()]
                 description = desc_lines[0] if desc_lines else None
 
                 objects.append(
@@ -205,7 +203,9 @@ class AdcomParser(MarkdownTableParser):
         return objects, enums
 
 
-def parse_adcom_spec(spec_path: Path = None) -> Tuple[List[ObjectDef], Dict[str, List[Tuple[str, str]]]]:
+def parse_adcom_spec(
+    spec_path: Path = None,
+) -> Tuple[List[ObjectDef], Dict[str, List[Tuple[str, str]]]]:
     """Parse Adcom specification file.
 
     Args:

@@ -39,7 +39,7 @@ class AdcomTypeMapper:
         # Sort by length descending to match longer names first (e.g., TitleAsset before Asset)
         for obj_name in sorted(known_objects, key=len, reverse=True):
             # Check for exact match with word boundaries
-            pattern = r'\b' + re.escape(obj_name.lower()) + r'\b'
+            pattern = r"\b" + re.escape(obj_name.lower()) + r"\b"
             if re.search(pattern, spec_type.lower()) and "object" in spec_type.lower():
                 # Forward reference for self-referential types
                 return f'"{obj_name}"', is_optional
@@ -135,9 +135,7 @@ class AdcomModelGenerator:
         else:
             for field in obj_def.fields:
                 # Map type
-                py_type, is_optional = AdcomTypeMapper.map_type(
-                    field.type_raw, known_objects
-                )
+                py_type, is_optional = AdcomTypeMapper.map_type(field.type_raw, known_objects)
 
                 # Determine if field should be optional
                 if is_optional or not field.required:
@@ -151,9 +149,7 @@ class AdcomModelGenerator:
                 desc = field.description.replace('"', "'")
 
                 # Generate field line
-                lines.append(
-                    f'    {field.attribute}: {full_type}{default}  # {desc}'
-                )
+                lines.append(f"    {field.attribute}: {full_type}{default}  # {desc}")
 
         return "\n".join(lines)
 

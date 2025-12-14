@@ -1,7 +1,6 @@
 """Tests for markdown table parser."""
 
-import pytest
-from tools.spec_parser.md_tables import MarkdownTableParser, ObjectDef, FieldDef
+from tools.spec_parser.md_tables import FieldDef, MarkdownTableParser, ObjectDef
 
 
 def test_parse_simple_table():
@@ -17,20 +16,20 @@ def test_parse_simple_table():
 """
     parser = MarkdownTableParser(markdown)
     objects = parser.extract_objects()
-    
+
     assert len(objects) == 1
     obj = objects[0]
     assert obj.name == "TestObject"
     assert len(obj.fields) == 3
-    
+
     # Check required fields
     assert obj.fields[0].attribute == "id"
     assert obj.fields[0].required is True
     assert obj.fields[0].type_raw == "string (36)"
-    
+
     assert obj.fields[1].attribute == "name"
     assert obj.fields[1].required is True
-    
+
     assert obj.fields[2].attribute == "active"
     assert obj.fields[2].required is False
 
@@ -54,7 +53,7 @@ def test_parse_multiple_objects():
 """
     parser = MarkdownTableParser(markdown)
     objects = parser.extract_objects()
-    
+
     assert len(objects) == 2
     assert objects[0].name == "Organization"
     assert objects[1].name == "Account"
@@ -74,10 +73,10 @@ def test_parse_enum_types():
 """
     parser = MarkdownTableParser(markdown)
     objects = parser.extract_objects()
-    
+
     assert len(objects) == 1
     obj = objects[0]
-    
+
     status_field = next(f for f in obj.fields if f.attribute == "status")
     assert "enum" in status_field.type_raw.lower()
     assert "Active" in status_field.type_raw
@@ -96,7 +95,7 @@ def test_parse_array_types():
 """
     parser = MarkdownTableParser(markdown)
     objects = parser.extract_objects()
-    
+
     obj = objects[0]
     contacts = next(f for f in obj.fields if f.attribute == "contacts")
     assert "array" in contacts.type_raw.lower() or "[]" in contacts.type_raw
@@ -114,7 +113,7 @@ def test_parse_nested_object_types():
 """
     parser = MarkdownTableParser(markdown)
     objects = parser.extract_objects()
-    
+
     obj = objects[0]
     account = next(f for f in obj.fields if f.attribute == "account")
     assert "object" in account.type_raw.lower()
@@ -134,12 +133,12 @@ def test_required_field_detection():
 """
     parser = MarkdownTableParser(markdown)
     objects = parser.extract_objects()
-    
+
     obj = objects[0]
     id_field = next(f for f in obj.fields if f.attribute == "id")
     name_field = next(f for f in obj.fields if f.attribute == "name")
     email_field = next(f for f in obj.fields if f.attribute == "email")
-    
+
     assert id_field.required is True
     assert name_field.required is False
     assert email_field.required is True
@@ -155,7 +154,7 @@ def test_empty_table():
 """
     parser = MarkdownTableParser(markdown)
     objects = parser.extract_objects()
-    
+
     # Should either skip or return object with no fields
     if len(objects) > 0:
         assert len(objects[0].fields) == 0
@@ -164,11 +163,11 @@ def test_empty_table():
 def test_get_enum_values():
     """Test extracting enum values."""
     parser = MarkdownTableParser("")
-    
+
     # Test parentheses format
     values = parser.get_enum_values("enum (Active, Inactive, Pending)")
     assert len(values) >= 3
-    
+
     # Test without parentheses
     values2 = parser.get_enum_values("Active, Inactive")
     assert len(values2) >= 2
@@ -181,7 +180,7 @@ def test_object_def_repr():
         FieldDef("name", "Name", "string", required=False),
     ]
     obj = ObjectDef("Test", fields)
-    
+
     repr_str = repr(obj)
     assert "Test" in repr_str
     assert "2 fields" in repr_str
@@ -190,11 +189,11 @@ def test_object_def_repr():
 def test_field_def_repr():
     """Test FieldDef repr."""
     field = FieldDef("id", "ID field", "string", required=True)
-    
+
     repr_str = repr(field)
     assert "id" in repr_str
     assert "*" in repr_str  # Required marker
-    
+
     field2 = FieldDef("name", "Name field", "string", required=False)
     repr_str2 = repr(field2)
     assert "*" not in repr_str2
@@ -209,10 +208,10 @@ def test_table_at_end_of_document():
 |--|--|--|
 |id*|Identifier|string|
 |value|Some value|integer|"""
-    
+
     parser = MarkdownTableParser(markdown)
     objects = parser.extract_objects()
-    
+
     assert len(objects) == 1
     assert objects[0].name == "LastObject"
     assert len(objects[0].fields) == 2

@@ -4,16 +4,16 @@ For production, replace with PostgreSQL or other database.
 """
 
 import uuid
-from typing import Any, Dict, List, Optional
 from dataclasses import dataclass, field
 from datetime import datetime
+from typing import Any, Optional
 
 
 @dataclass
 class Entity:
     """Base entity with metadata."""
 
-    data: Dict[str, Any]
+    data: dict[str, Any]
     created_at: datetime = field(default_factory=datetime.utcnow)
     updated_at: datetime = field(default_factory=datetime.utcnow)
 
@@ -31,11 +31,9 @@ class InMemoryStore:
 
     def __init__(self):
         """Initialize empty store."""
-        self.data: Dict[str, Dict[str, Entity]] = {}
+        self.data: dict[str, dict[str, Entity]] = {}
 
-    def list(
-        self, entity_type: str, skip: int = 0, limit: int = 100
-    ) -> List[Dict[str, Any]]:
+    def list(self, entity_type: str, skip: int = 0, limit: int = 100) -> list[dict[str, Any]]:
         """List all entities of a type with pagination."""
         if entity_type not in self.data:
             return []
@@ -43,16 +41,14 @@ class InMemoryStore:
         items = list(self.data[entity_type].values())
         return [e.data for e in items[skip : skip + limit]]
 
-    def get(self, entity_type: str, entity_id: str) -> Optional[Dict[str, Any]]:
+    def get(self, entity_type: str, entity_id: str) -> Optional[dict[str, Any]]:
         """Get specific entity by ID."""
         if entity_type not in self.data or entity_id not in self.data[entity_type]:
             return None
 
         return self.data[entity_type][entity_id].data
 
-    def create(
-        self, entity_type: str, entity_data: Dict[str, Any]
-    ) -> Dict[str, Any]:
+    def create(self, entity_type: str, entity_data: dict[str, Any]) -> dict[str, Any]:
         """Create new entity with generated UUID."""
         entity_id = entity_data.get("id") or str(uuid.uuid4())
         entity_data["id"] = entity_id
@@ -66,8 +62,8 @@ class InMemoryStore:
         return entity.data
 
     def update(
-        self, entity_type: str, entity_id: str, updates: Dict[str, Any]
-    ) -> Optional[Dict[str, Any]]:
+        self, entity_type: str, entity_id: str, updates: dict[str, Any]
+    ) -> Optional[dict[str, Any]]:
         """Update existing entity (merge updates)."""
         if entity_type not in self.data or entity_id not in self.data[entity_type]:
             return None

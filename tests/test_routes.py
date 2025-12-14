@@ -1,10 +1,11 @@
 """Tests for generated API routes."""
 
 import pytest
-from fastapi.testclient import TestClient
 from fastapi import FastAPI
+from fastapi.testclient import TestClient
+
 from opendirect21.api.generated import router
-from opendirect21.store import InMemoryStore, get_store
+from opendirect21.store import get_store
 
 
 @pytest.fixture
@@ -45,10 +46,10 @@ def test_create_organization(client):
         "name": "Test Publisher",
         "status": "Active",
     }
-    
+
     response = client.post("/api/v1/organizations", json=org_data)
     assert response.status_code == 201
-    
+
     data = response.json()
     assert data["id"] == "org-123"
     assert data["name"] == "Test Publisher"
@@ -64,11 +65,11 @@ def test_get_organization_by_id(client):
         "status": "Active",
     }
     client.post("/api/v1/organizations", json=org_data)
-    
+
     # Get by ID
     response = client.get("/api/v1/organizations/org-456")
     assert response.status_code == 200
-    
+
     data = response.json()
     assert data["id"] == "org-456"
     assert data["name"] == "Another Publisher"
@@ -90,7 +91,7 @@ def test_update_organization(client):
         "status": "Active",
     }
     client.post("/api/v1/organizations", json=org_data)
-    
+
     # Update
     updated_data = {
         "id": "org-789",
@@ -99,7 +100,7 @@ def test_update_organization(client):
     }
     response = client.put("/api/v1/organizations/org-789", json=updated_data)
     assert response.status_code == 200
-    
+
     data = response.json()
     assert data["name"] == "Updated Name"
     assert data["status"] == "Inactive"
@@ -125,11 +126,11 @@ def test_delete_organization(client):
         "status": "Active",
     }
     client.post("/api/v1/organizations", json=org_data)
-    
+
     # Delete
     response = client.delete("/api/v1/organizations/org-delete")
     assert response.status_code == 204
-    
+
     # Verify deleted
     get_response = client.get("/api/v1/organizations/org-delete")
     assert get_response.status_code == 404
@@ -151,19 +152,19 @@ def test_list_organizations_pagination(client):
             "status": "Active",
         }
         client.post("/api/v1/organizations", json=org_data)
-    
+
     # Get first page
     response = client.get("/api/v1/organizations?skip=0&limit=3")
     assert response.status_code == 200
     data = response.json()
     assert len(data) == 3
-    
+
     # Get second page
     response = client.get("/api/v1/organizations?skip=3&limit=3")
     assert response.status_code == 200
     data = response.json()
     assert len(data) == 3
-    
+
     # Get last page
     response = client.get("/api/v1/organizations?skip=9&limit=3")
     assert response.status_code == 200
@@ -182,17 +183,17 @@ def test_accounts_crud(client):
     }
     response = client.post("/api/v1/accounts", json=account_data)
     assert response.status_code == 201
-    
+
     # List
     response = client.get("/api/v1/accounts")
     assert response.status_code == 200
     assert len(response.json()) == 1
-    
+
     # Get
     response = client.get("/api/v1/accounts/acc-123")
     assert response.status_code == 200
     assert response.json()["name"] == "Test Account"
-    
+
     # Update
     updated_data = {
         **account_data,
@@ -201,7 +202,7 @@ def test_accounts_crud(client):
     response = client.put("/api/v1/accounts/acc-123", json=updated_data)
     assert response.status_code == 200
     assert response.json()["name"] == "Updated Account"
-    
+
     # Delete
     response = client.delete("/api/v1/accounts/acc-123")
     assert response.status_code == 204
@@ -216,11 +217,11 @@ def test_orders_crud(client):
         "startDate": "2025-01-01T00:00:00",
         "status": "Active",
     }
-    
+
     response = client.post("/api/v1/orders", json=order_data)
     assert response.status_code == 201
     assert response.json()["name"] == "Q1 Campaign"
-    
+
     response = client.get("/api/v1/orders/order-001")
     assert response.status_code == 200
 
@@ -235,7 +236,7 @@ def test_lines_crud(client):
         "startDate": "2025-01-01T00:00:00",
         "rateType": "CPM",
     }
-    
+
     response = client.post("/api/v1/lines", json=line_data)
     assert response.status_code == 201
     assert response.json()["bookingStatus"] == "Booked"
@@ -249,7 +250,7 @@ def test_creatives_crud(client):
         "name": "Banner Creative",
         "adFormatType": "Display",
     }
-    
+
     response = client.post("/api/v1/creatives", json=creative_data)
     assert response.status_code == 201
     assert response.json()["adFormatType"] == "Display"
@@ -260,7 +261,7 @@ def test_invalid_pagination_params(client):
     # Negative skip
     response = client.get("/api/v1/organizations?skip=-1")
     assert response.status_code == 422  # Validation error
-    
+
     # Limit too large
     response = client.get("/api/v1/organizations?limit=10000")
     assert response.status_code == 422
@@ -272,7 +273,7 @@ def test_create_with_missing_required_fields(client):
         "id": "org-incomplete",
         # Missing name and status
     }
-    
+
     response = client.post("/api/v1/organizations", json=incomplete_org)
     assert response.status_code == 422  # Validation error
 
@@ -290,7 +291,7 @@ def test_multiple_endpoints_exist(client):
         "/api/v1/products",
         "/api/v1/contacts",
     ]
-    
+
     for endpoint in endpoints:
         response = client.get(endpoint)
         # Should return 200 (empty list) or other valid status, not 404

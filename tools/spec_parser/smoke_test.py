@@ -1,11 +1,5 @@
 """Smoke tests for parser verification."""
 
-import sys
-from pathlib import Path
-
-# Add project root to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-
 from tools.spec_parser.md_tables import MarkdownTableParser
 
 
@@ -38,7 +32,7 @@ def test_markdown_parser():
 
     org = next((o for o in objects if o.name == "Organization"), None)
     assert org is not None, "Organization object not found"
-    assert len(org.fields) >= 4, f"Expected at least 4 fields in Organization"
+    assert len(org.fields) >= 4, "Expected at least 4 fields in Organization"
 
     # Check field names
     field_names = [f.attribute for f in org.fields]

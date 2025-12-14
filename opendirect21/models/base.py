@@ -1,9 +1,9 @@
 """Base model classes and utilities."""
 
 from datetime import datetime
-from typing import Optional, Any, Dict
-from pydantic import BaseModel, Field, ConfigDict
 from uuid import uuid4
+
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class TimestampedModel(BaseModel):
@@ -12,7 +12,9 @@ class TimestampedModel(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     created_at: datetime = Field(default_factory=datetime.utcnow, description="Creation timestamp")
-    updated_at: datetime = Field(default_factory=datetime.utcnow, description="Last update timestamp")
+    updated_at: datetime = Field(
+        default_factory=datetime.utcnow, description="Last update timestamp"
+    )
 
 
 class IDModel(BaseModel):

@@ -1,6 +1,5 @@
 """Tests for data store."""
 
-import pytest
 from opendirect21.store import InMemoryStore
 
 
@@ -94,4 +93,3 @@ def test_exists_entity(store: InMemoryStore):
 
     not_exists = store.exists("organizations", "non-existent-id")
     assert not_exists is False
-

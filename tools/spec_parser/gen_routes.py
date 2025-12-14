@@ -1,7 +1,7 @@
 """FastAPI route generator from specification objects."""
 
 from pathlib import Path
-from typing import List
+
 from tools.spec_parser.md_tables import ObjectDef
 
 
@@ -35,12 +35,14 @@ class RouteGenerator:
         lines.append("")
 
         # List endpoint
-        lines.append(f'@router.get("{route_prefix}", response_model=List[{model_name}])')
+        lines.append(f'@router.get("{route_prefix}", response_model=list[{model_name}])')
         lines.append(f"async def list_{var_name}s(")
         lines.append("    skip: int = Query(0, ge=0, description='Number of items to skip'),")
-        lines.append("    limit: int = Query(100, ge=1, le=1000, description='Max items to return'),")
-        lines.append(f"    store: InMemoryStore = Depends(get_store),")
-        lines.append(") -> List[dict]:")
+        lines.append(
+            "    limit: int = Query(100, ge=1, le=1000, description='Max items to return'),"
+        )
+        lines.append("    store: InMemoryStore = Depends(get_store),")
+        lines.append(") -> list[dict]:")
         lines.append(f'    """List all {model_name} objects with pagination."""')
         lines.append(f'    return store.list("{model_name}", skip=skip, limit=limit)')
         lines.append("")
@@ -49,20 +51,24 @@ class RouteGenerator:
         lines.append(f'@router.get("{route_prefix}/{{id}}", response_model={model_name})')
         lines.append(f"async def get_{var_name}(")
         lines.append("    id: str = Path(..., description='Unique identifier'),")
-        lines.append(f"    store: InMemoryStore = Depends(get_store),")
+        lines.append("    store: InMemoryStore = Depends(get_store),")
         lines.append(") -> dict:")
         lines.append(f'    """Get a specific {model_name} by ID."""')
         lines.append(f'    entity = store.get("{model_name}", id)')
         lines.append("    if not entity:")
-        lines.append(f'        raise HTTPException(status_code=404, detail="{model_name} not found")')
+        lines.append(
+            f'        raise HTTPException(status_code=404, detail="{model_name} not found")'
+        )
         lines.append("    return entity")
         lines.append("")
 
         # Create endpoint
-        lines.append(f'@router.post("{route_prefix}", response_model={model_name}, status_code=201)')
+        lines.append(
+            f'@router.post("{route_prefix}", response_model={model_name}, status_code=201)'
+        )
         lines.append(f"async def create_{var_name}(")
         lines.append(f"    entity: {model_name},")
-        lines.append(f"    store: InMemoryStore = Depends(get_store),")
+        lines.append("    store: InMemoryStore = Depends(get_store),")
         lines.append(") -> dict:")
         lines.append(f'    """Create a new {model_name}."""')
         lines.append(f'    created = store.create("{model_name}", entity.model_dump())')
@@ -74,12 +80,14 @@ class RouteGenerator:
         lines.append(f"async def update_{var_name}(")
         lines.append(f"    entity: {model_name},")
         lines.append("    id: str = Path(..., description='Unique identifier'),")
-        lines.append(f"    store: InMemoryStore = Depends(get_store),")
+        lines.append("    store: InMemoryStore = Depends(get_store),")
         lines.append(") -> dict:")
         lines.append(f'    """Update an existing {model_name}."""')
         lines.append(f'    updated = store.update("{model_name}", id, entity.model_dump())')
         lines.append("    if not updated:")
-        lines.append(f'        raise HTTPException(status_code=404, detail="{model_name} not found")')
+        lines.append(
+            f'        raise HTTPException(status_code=404, detail="{model_name} not found")'
+        )
         lines.append("    return updated")
         lines.append("")
 
@@ -87,18 +95,20 @@ class RouteGenerator:
         lines.append(f'@router.delete("{route_prefix}/{{id}}", status_code=204)')
         lines.append(f"async def delete_{var_name}(")
         lines.append("    id: str = Path(..., description='Unique identifier'),")
-        lines.append(f"    store: InMemoryStore = Depends(get_store),")
+        lines.append("    store: InMemoryStore = Depends(get_store),")
         lines.append(") -> None:")
         lines.append(f'    """Delete a {model_name}."""')
         lines.append(f'    success = store.delete("{model_name}", id)')
         lines.append("    if not success:")
-        lines.append(f'        raise HTTPException(status_code=404, detail="{model_name} not found")')
+        lines.append(
+            f'        raise HTTPException(status_code=404, detail="{model_name} not found")'
+        )
         lines.append("")
 
         return "\n".join(lines)
 
     def generate_all_routes(
-        self, objects: List[ObjectDef], output_file: str = "opendirect_routes.py"
+        self, objects: list[ObjectDef], output_file: str = "opendirect_routes.py"
     ) -> str:
         """Generate complete Python file with all routes.
 
@@ -118,7 +128,6 @@ class RouteGenerator:
         lines.append("")
 
         # Imports
-        lines.append("from typing import List")
         lines.append("from fastapi import APIRouter, HTTPException, Depends, Query, Path")
         lines.append("from opendirect21.store import InMemoryStore, get_store")
         lines.append("")

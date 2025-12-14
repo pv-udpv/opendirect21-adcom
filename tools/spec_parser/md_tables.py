@@ -2,7 +2,7 @@
 
 import re
 from dataclasses import dataclass
-from typing import List, Iterator, Tuple, Optional
+from typing import Optional
 
 
 @dataclass
@@ -24,7 +24,7 @@ class ObjectDef:
     """Object definition from specification."""
 
     name: str
-    fields: List[FieldDef]
+    fields: list[FieldDef]
     section: Optional[str] = None
     description: Optional[str] = None
 
@@ -47,23 +47,23 @@ class MarkdownTableParser:
 
     def __init__(self, markdown_content: str):
         """Initialize parser with markdown content.
-        
+
         Args:
             markdown_content: Raw markdown file content
         """
         self.content = markdown_content
-        self.objects: List[ObjectDef] = []
+        self.objects: list[ObjectDef] = []
 
-    def parse_table_body(self, body: str) -> List[FieldDef]:
+    def parse_table_body(self, body: str) -> list[FieldDef]:
         """Parse table body and extract field definitions.
-        
+
         Args:
             body: Table body content between header and next section
-            
+
         Returns:
             List of FieldDef objects
         """
-        fields: List[FieldDef] = []
+        fields: list[FieldDef] = []
 
         for line in body.split("\n"):
             line = line.strip()
@@ -102,9 +102,9 @@ class MarkdownTableParser:
 
         return fields
 
-    def extract_objects(self) -> List[ObjectDef]:
+    def extract_objects(self) -> list[ObjectDef]:
         """Extract all objects from markdown.
-        
+
         Returns:
             List of ObjectDef objects parsed from specification
         """
@@ -128,12 +128,12 @@ class MarkdownTableParser:
 
         return objects
 
-    def get_enum_values(self, text: str) -> List[Tuple[str, str]]:
+    def get_enum_values(self, text: str) -> list[tuple[str, str]]:
         """Extract enum values from text section.
-        
+
         Args:
             text: Text containing enum values like "A, B, C" or "(A|B|C)"
-            
+
         Returns:
             List of (key, value) tuples
         """

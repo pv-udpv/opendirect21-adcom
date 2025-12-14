@@ -4,16 +4,16 @@ Starts the OpenDirect 2.1 + Adcom v1.0 reference server with all routes and conf
 """
 
 import logging
+from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
-from typing import AsyncGenerator
 
 from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
+from opendirect21.api.health import router as health_router
 from opendirect21.config import get_settings
 from opendirect21.store import InMemoryStore
-from opendirect21.api.health import router as health_router
 
 # Configure logging
 logging.basicConfig(
@@ -31,8 +31,8 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Manage application startup and shutdown."""
     # Startup
     logger.info("🚀 Starting OpenDirect 2.1 + Adcom v1.0 Server")
-    logger.info(f"📡 API Documentation: http://localhost:8000/docs")
-    logger.info(f"📚 Alternative Docs: http://localhost:8000/redoc")
+    logger.info("📡 API Documentation: http://localhost:8000/docs")
+    logger.info("📚 Alternative Docs: http://localhost:8000/redoc")
 
     yield
 

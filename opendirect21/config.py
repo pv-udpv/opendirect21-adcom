@@ -1,8 +1,8 @@
 """Application configuration using Pydantic Settings."""
 
-from typing import List
-from pydantic_settings import BaseSettings
 from functools import lru_cache
+
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):
@@ -18,14 +18,14 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///./opendirect21.db"
 
     # CORS
-    cors_origins: List[str] = [
+    cors_origins: list[str] = [
         "http://localhost",
         "http://localhost:3000",
         "http://localhost:8000",
     ]
     cors_allow_credentials: bool = True
-    cors_allow_methods: List[str] = ["*"]
-    cors_allow_headers: List[str] = ["*"]
+    cors_allow_methods: list[str] = ["*"]
+    cors_allow_headers: list[str] = ["*"]
 
     # Security
     secret_key: str = "change_me_in_production"
@@ -37,7 +37,7 @@ class Settings(BaseSettings):
         case_sensitive = False
 
 
-@lru_cache()
+@lru_cache
 def get_settings() -> Settings:
     """Get cached settings instance."""
     return Settings()

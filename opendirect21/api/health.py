@@ -1,16 +1,17 @@
 """Health check endpoints."""
 
 from datetime import datetime
+from typing import Any
+
 from fastapi import APIRouter, status
-from typing import Dict, Any
 
 router = APIRouter(tags=["health"])
 
 
 @router.get("/health", status_code=status.HTTP_200_OK)
-async def health_check() -> Dict[str, Any]:
+async def health_check() -> dict[str, Any]:
     """System health check endpoint.
-    
+
     Returns:
         Health status with service info and timestamp
     """
@@ -23,7 +24,7 @@ async def health_check() -> Dict[str, Any]:
 
 
 @router.get("/health/deep", status_code=status.HTTP_200_OK)
-async def deep_health_check() -> Dict[str, Any]:
+async def deep_health_check() -> dict[str, Any]:
     """Detailed health check with subsystem status."""
     return {
         "status": "healthy",
@@ -39,7 +40,7 @@ async def deep_health_check() -> Dict[str, Any]:
 
 
 @router.get("/info", status_code=status.HTTP_200_OK)
-async def service_info() -> Dict[str, Any]:
+async def service_info() -> dict[str, Any]:
     """Get service information and available specs."""
     return {
         "service": "OpenDirect 2.1 + Adcom v1.0 Reference Server",

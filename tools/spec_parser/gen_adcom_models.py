@@ -36,8 +36,11 @@ class AdcomTypeMapper:
             return f"List[{inner_type}]", is_optional
 
         # Handle object references (e.g., "Display object", "LinkAsset object")
-        for obj_name in known_objects:
-            if obj_name.lower() in spec_type.lower() and "object" in spec_type.lower():
+        # Sort by length descending to match longer names first (e.g., TitleAsset before Asset)
+        for obj_name in sorted(known_objects, key=len, reverse=True):
+            # Check for exact match with word boundaries
+            pattern = r'\b' + re.escape(obj_name.lower()) + r'\b'
+            if re.search(pattern, spec_type.lower()) and "object" in spec_type.lower():
                 # Forward reference for self-referential types
                 return f'"{obj_name}"', is_optional
 

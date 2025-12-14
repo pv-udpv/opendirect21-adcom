@@ -22,18 +22,18 @@ class InMemoryStore:
     """Thread-safe in-memory data store.
 
     Usage:
-        store = InMemoryStore()
-        user = await store.create('users', {'name': 'John'})
-        users = await store.list('users')
-        updated = await store.update('users', user['id'], {'name': 'Jane'})
-        await store.delete('users', user['id'])
+        store = get_store()
+        user = store.create('users', {'name': 'John'})
+        users = store.list('users')
+        updated = store.update('users', user['id'], {'name': 'Jane'})
+        store.delete('users', user['id'])
     """
 
     def __init__(self):
         """Initialize empty store."""
         self.data: Dict[str, Dict[str, Entity]] = {}
 
-    async def list(
+    def list(
         self, entity_type: str, skip: int = 0, limit: int = 100
     ) -> List[Dict[str, Any]]:
         """List all entities of a type with pagination."""
@@ -43,14 +43,14 @@ class InMemoryStore:
         items = list(self.data[entity_type].values())
         return [e.data for e in items[skip : skip + limit]]
 
-    async def get(self, entity_type: str, entity_id: str) -> Optional[Dict[str, Any]]:
+    def get(self, entity_type: str, entity_id: str) -> Optional[Dict[str, Any]]:
         """Get specific entity by ID."""
         if entity_type not in self.data or entity_id not in self.data[entity_type]:
             return None
 
         return self.data[entity_type][entity_id].data
 
-    async def create(
+    def create(
         self, entity_type: str, entity_data: Dict[str, Any]
     ) -> Dict[str, Any]:
         """Create new entity with generated UUID."""
@@ -65,7 +65,7 @@ class InMemoryStore:
 
         return entity.data
 
-    async def update(
+    def update(
         self, entity_type: str, entity_id: str, updates: Dict[str, Any]
     ) -> Optional[Dict[str, Any]]:
         """Update existing entity (merge updates)."""
@@ -78,7 +78,7 @@ class InMemoryStore:
 
         return entity.data
 
-    async def delete(self, entity_type: str, entity_id: str) -> bool:
+    def delete(self, entity_type: str, entity_id: str) -> bool:
         """Delete entity by ID."""
         if entity_type not in self.data or entity_id not in self.data[entity_type]:
             return False
@@ -86,7 +86,7 @@ class InMemoryStore:
         del self.data[entity_type][entity_id]
         return True
 
-    async def delete_all(self, entity_type: str) -> int:
+    def delete_all(self, entity_type: str) -> int:
         """Delete all entities of a type."""
         if entity_type not in self.data:
             return 0
@@ -95,10 +95,22 @@ class InMemoryStore:
         self.data[entity_type] = {}
         return count
 
-    async def count(self, entity_type: str) -> int:
+    def count(self, entity_type: str) -> int:
         """Count entities of a type."""
         return len(self.data.get(entity_type, {}))
 
-    async def exists(self, entity_type: str, entity_id: str) -> bool:
+    def exists(self, entity_type: str, entity_id: str) -> bool:
         """Check if entity exists."""
         return entity_type in self.data and entity_id in self.data[entity_type]
+
+
+# Global store instance
+_store: Optional[InMemoryStore] = None
+
+
+def get_store() -> InMemoryStore:
+    """Get the global store instance."""
+    global _store
+    if _store is None:
+        _store = InMemoryStore()
+    return _store

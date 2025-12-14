@@ -172,6 +172,14 @@ class PydanticGenerator:
                     if enum_values:
                         py_type = f"{field.attribute.capitalize()}Enum"
                 
+                # For object references, use string literals to avoid forward reference issues
+                if py_type in [o.name for o in [obj_def]]:  # Self-reference
+                    py_type = f'"{py_type}"'
+                elif not py_type.startswith(('str', 'int', 'float', 'bool', 'datetime', 'date', 'List', 'Dict')):
+                    # It's probably a reference to another model, use string literal
+                    if py_type not in ['Any'] and not py_type.endswith('Enum'):
+                        py_type = f'"{py_type}"'
+                
                 # Sanitize field name
                 field_name, original_name = self.sanitize_field_name(field.attribute)
                 
@@ -220,13 +228,11 @@ class PydanticGenerator:
         lines.append("")
         lines.append("# This file is auto-generated. Do not edit manually.")
         lines.append("")
-        lines.append("from __future__ import annotations")
-        lines.append("")
         
         # Collect imports
         imports = {
             "from enum import Enum",
-            "from typing import Optional, List, Dict, Any",
+            "from typing import TYPE_CHECKING, Optional, List, Dict, Any",
             "from pydantic import BaseModel, Field",
         }
         
@@ -272,6 +278,12 @@ class PydanticGenerator:
             lines.append(self.generate_model_code(obj))
             lines.append("")
             lines.append("")
+        
+        # Rebuild models to resolve forward references
+        lines.append("# Rebuild models to resolve forward references")
+        for obj in objects:
+            lines.append(f"{obj.name}.model_rebuild()")
+        lines.append("")
         
         # Write to file
         output_path = self.output_dir / output_file

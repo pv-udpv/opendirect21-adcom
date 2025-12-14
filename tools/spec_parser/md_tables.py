@@ -47,7 +47,7 @@ class MarkdownTableParser:
 
     def __init__(self, markdown_content: str):
         """Initialize parser with markdown content.
-        
+
         Args:
             markdown_content: Raw markdown file content
         """
@@ -56,10 +56,10 @@ class MarkdownTableParser:
 
     def parse_table_body(self, body: str) -> List[FieldDef]:
         """Parse table body and extract field definitions.
-        
+
         Args:
             body: Table body content between header and next section
-            
+
         Returns:
             List of FieldDef objects
         """
@@ -100,7 +100,7 @@ class MarkdownTableParser:
 
     def extract_objects(self) -> List[ObjectDef]:
         """Extract all objects from markdown.
-        
+
         Returns:
             List of ObjectDef objects parsed from specification
         """
@@ -126,10 +126,10 @@ class MarkdownTableParser:
 
     def get_enum_values(self, text: str) -> List[Tuple[str, str]]:
         """Extract enum values from text section.
-        
+
         Args:
             text: Text containing enum values like "A, B, C" or "(A|B|C)"
-            
+
         Returns:
             List of (key, value) tuples
         """

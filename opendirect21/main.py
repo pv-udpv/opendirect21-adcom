@@ -14,6 +14,7 @@ from fastapi.responses import JSONResponse
 from opendirect21.config import get_settings
 from opendirect21.store import InMemoryStore
 from opendirect21.api.health import router as health_router
+from opendirect21.api.generated.adcom_routes import router as adcom_router
 
 # Configure logging
 logging.basicConfig(
@@ -65,6 +66,7 @@ def create_app() -> FastAPI:
 
     # Include routers
     app.include_router(health_router, tags=["health"])
+    app.include_router(adcom_router, tags=["adcom"])
 
     # Root endpoint
     @app.get("/", tags=["root"])
@@ -82,6 +84,7 @@ def create_app() -> FastAPI:
                 "health": "/health",
                 "health_deep": "/health/deep",
                 "info": "/info",
+                "adcom": "/api/v1/adcom",
                 "docs": "/docs",
                 "redoc": "/redoc",
             },
